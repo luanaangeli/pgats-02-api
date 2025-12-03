@@ -2,9 +2,13 @@ import http from 'k6/http';
 import { sleep, check } from 'k6';
 
 export const options = {
-    vus: 1,
-    //duration: '10s'
-    iterations: 1
+    vus: 10,
+    duration: '20s',
+    //iterations: 1
+    thresholds: {
+        http_req_duration: ['p(90)<=2', 'p(95)<=3'],
+        http_req_failed: ['rate<0.01']
+    }
 
 };
 
@@ -12,7 +16,7 @@ export default function() {
     let resLogin = http.post(
         'http://localhost:3000/users/login', 
         JSON.stringify({
-            username: 'Margarete', 
+            username: 'Paulo', 
             password: '123456'
         }),
         {
@@ -21,14 +25,14 @@ export default function() {
 
             }
     });
- //console.log(resLogin.json('token'))
+
 
     let resTransfer = http.post(
         'http://localhost:3000/transfers', 
         JSON.stringify({
-            from: 'Margarete',  
-            to: 'Paulo',
-            value: 300
+            from: 'Paulo',  
+            to: 'Margarete',
+            value: 1
         }),
         {
             headers: {
@@ -45,8 +49,5 @@ export default function() {
 
     });
     
-
-
-
     sleep(1);
 }
